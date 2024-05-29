@@ -54,10 +54,14 @@ Sensitivity (Recall): TP / (TP + FN)
 Specificity: TN / (TN + FP)
 
 * Similar to sensitivity, specificity is a good evaluation metric if there is an imbalance between the number of real positive and negative instances.
-* The metric is desirable, **especially when the cost of a false positive is high.** 
-* For example, imagine you work in real estate and you would like to offer discounts to previous customers who tend to be serious about buying their next home only, as it would be impractical and costly for your company to offer discounts to everyone. In this case, you may want to consider specificity, which integrates false positives into the formula.
 
-
+### 5. Precision
+* Precision assesses the proportion of correct positive predictions made by the model when it predicts that the outcome is positive. The fomular is as below:
+* Precision = TP/ TP + FP
+* The precision scores range from 0 to 1, with higher scores indicating greater accuracy in predicting positive instances.
+* Like sensitivity, precision is desirable, **especially when the cost of a false positive is high.** For example, imagine you work in real estate and you would like to offer discounts to previous customers who tend to be serious about buying their next home only, as it would be impractical and costly for your company to offer discounts to everyone. In this case, you may want to consider specificity, which integrates false positives into the formula.
+* Despite the advantage of considering false positives, the drawback of precision is that it does not account for false negatives, i.e., customers who are wrongly classified by the model as unlikely to buy but actually would buy. If you use this metric, you may miss targeting these potential buyers.
+* Choosing between precision or recall depends on what aspect you value more. Precision is a suitable metric when you care more about *being correct* when assigning the positive class (i.e., when a false positive is costly). Recall is preferable when you care more about *capturing all possible positive cases* (i.e., when missing a positive case has serious consequences), such as in cancer detection or public health interventions where the stakes involve significant financial costs or life-and-death situations. On the other hand, precision could be chosen when the cost of incorrectly assigning positives is high, such as in banking, finance, commercials, or real estate. 
 
 
 
