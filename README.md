@@ -63,6 +63,19 @@ Specificity: TN / (TN + FP)
 * Despite the advantage of considering false positives, the drawback of precision is that it does not account for false negatives, i.e., customers who are wrongly classified by the model as unlikely to buy but actually would buy. If you use this metric, you may miss targeting these potential buyers.
 * Choosing between precision or recall depends on what aspect you value more. Precision is a suitable metric when you care more about *being correct* when assigning the positive class (i.e., when a false positive is costly). Recall is preferable when you care more about *capturing all possible positive cases* (i.e., when missing a positive case has serious consequences), such as in cancer detection or public health interventions where the stakes involve significant financial costs or life-and-death situations. On the other hand, precision could be chosen when the cost of incorrectly assigning positives is high, such as in banking, finance, commercials, or real estate. 
 
+### 6. F-1 scores
+* If you care about both precision and recall, you may consider F-1 scores as your evaluation metric.
+* The score can be thought of as a harmonic mean of precision and recall, ranging from 0 to 1.  When F1 score is 1, it means that we have perfect precision and recall. When F 1 cores is 0, it means we have bad precision and recall.
+* The formular is: F1 = 2 x precision x recall/precision + recall
+
+### 7. Area under the curve (AUC) (also known as the area under the Receiver Operating Characteristic (ROC) curve)
+* The AUC is a plot that represents the dynamic relationship between sensitivity (recall) and specificity. When you have a binary outcome for which you need to identify a threshold to categorize the outcome probabilities into 0 or 1, the AUC can help in identifying the best cut-off values.
+* As I mentioned earlier, the most common cutoff point is 0.5. However, this also depends on the nature of the project you are working on. For example, if you are working on a project where a lower threshold should be set, such as estimating whether a person should be isolated during a new pandemic, the threshold of 0.3 might be used. You wouldn’t want to use a higher threshold and then let people walk out, potentially spreading the virus!
+*  Imagine that you are working with a cancer detection dataset and you would like to see if changing the cutoff point would impact the sensitivity or specificity, starting from using a standard cutoff point which is 0.5. You can plot the AUC plot that would look something like the following:
+
+  3333%%% The axis it self is the threshpold 
+* According to the plot, you can see that the higher the specificity (true negative rates), the lower the sensitivity (true positive rate). Thus, if you want to achieve a higher positive rate (i.e., your priority is about detecting all cancer patients), you have to lower the cutoff point values.
+* The area under the curve is typically used to evaluate the predictive power of classification models. There are many packages such as X and Y in Python that you can use to calculate the area under the curve. The closer the AUC is to 1, the more predictive power the model has. The closer the AUC is to 0.5, the closer the predictive power is to random guessing.
 
 
 
