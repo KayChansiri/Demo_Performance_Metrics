@@ -82,6 +82,96 @@ Specificity: TN / (TN + FP)
 * You can use `roc_curve` in Python to see the array of thresholds that correspond to each point on the ROC curve, giving you a better idea of which threshold corresponds with which true positive or false positive values.
 * Note that the closer the AUC is to 1, the more predictive power the model has. Conversely, the closer the AUC is to 0.5, the closer the predictive power is to random guessing (i.e., the model does not effectively categorize positive and negative cases from each other).
 
+# Metrics for Classifiers (Multicategorical Outcomes)
+
+Beyond models predicting binary outcomes, a confusion matrix can be used to evaluate models predicting multicategorical outcomes. The confusion matrix for multicategorical outcomes could look like this:
+
+| Actual \ Predicted | Lung Cancer | Breast Cancer | Skin Cancer |
+|--------------------|-------------|---------------|-------------|
+| Lung Cancer        | 50          | 8             | 5           |
+| Breast Cancer      | 7           | 75            | 3           |
+| Skin Cancer        | 4           | 2             | 80          |
+
+Similar to the matrix for binary outcomes, the matrix for multicategorical outcomes can be used to calculate accuracy, sensitivity, specificity, and precision. However, certain points need to be adjusted using two primary methods:
+
+## Macro-Averaging
+**This method calculates each metric separately for each class and then takes the average**. This approach gives equal importance to each class, regardless of its size. If your data has class imbalance, macro-averaging is reliable in evaluating model performance because the metric is calculated independently for each class before taking the average, giving equal weight to each class regardless of its size. However, just like metrics for binary outcomes, certain metrics such as accuracy could be biased by class imbalance. For macro-averaging, each class is given equal weight, so the performance of minority classes can disproportionately affect the overall accuracy. Note that in cases where classes are balanced, both micro- and macro-averaging will yield similar results for most metrics.
+
+## Micro-Averaging
+This method considers the contributions of all classes to compute the average metric. If you have class imbalance, this approach may not be appropriate and could be dominated by the majority class. Although micro-averaging might not be a good method to evaluate the performance of each class separately if you have a class imbalance, the method might be appropriate for evaluating the overall effectiveness of the model, especially if the majority class is the most important. This is typically the case in banking or consumer application industries. 
+
+In summary,if you care more about all classes being detected, macro-averaging is the best option. If you care more about overall model performance, micro-averaging is the better option. 
+
+## Let's take a look at an example using the confusion matrix above:
+**Accuracy Calculation for Each Class:**
+* Lung Cancer: (50 / (50 + 8 + 5)) ≈ 79%
+* Breast Cancer: (75 / (7 + 75 + 3)) ≈ 88%
+* Skin Cancer: (80 / (4 + 2 + 80)) ≈ 93%
+
+**Macro-Averaging:**
+Overall Accuracy: (79% + 88% + 93%) / 3 ≈ 86.67%
+
+**Micro-Averaging:**
+* Total Correct Predictions: 50 (i.e., Lung) + 75 (i.e., Breast) + 80 (i..e, Skin) = 205
+* Total Predictions Made: 63 (Lung) + 85 (Breast) + 86 (Skin) = 234
+* Micro-Averaged Accuracy: 205 / 234 ≈ 87.61%
+
+
+Now you have an understanding of how to calculate accuracy using macro- and micro-averaging. This concept can be applied to other metrics such as precision, recall, and specificity.
+
+# Evaluation Metrics for Continuous Outcomes
+
+For continuous outcomes, the model aims to predict numeric values instead of categorical ones. The goal of all regressors (i.e., models predicting continuous outcomes) is to minimize the distance between observed and predicted values, as shown in the equation: 
+
+*e*<sub>*i*</sub> = *y*<sub>*i*</sub> - $\hat{y}$<sub>*i*</sub>
+​	
+
+To better understand errors and how they are produced, consider one of the simplest ML algorithms: linear regression. This can be represented by the equation:
+
+*y* = *β*<sub>*0*</sub> + *β*<sub>*1*</sub>*X*<sub>*1*</sub> + *β*<sub>*2*</sub>*X*<sub>*2*</sub> + *ϵ*
+
+Initially, the algorithm does not know the best values for *β*<sub>*1*</sub> and *β*<sub>*2*. It begins by plugging in random numbers for these parameters and iteratively adjusts them to minimize *ϵ*  (i.e.,the distance between observed and predicted values). When the process is performed iteractively, you can get something like the plot below: 
+
+<img width="591" alt="Screen Shot 2024-06-05 at 12 45 50 PM" src="https://github.com/KayChansiri/Demo_Performance_Metrics/assets/157029107/2895c6ea-f45b-4371-af7d-055fa9af5a7a">
+
+
+From the plot, you can see the best pair of values for *β*<sub>*1*</sub> and *β*<sub>*2* that minimizes *ϵ* would be at somewhere at the bottom right corner where I circled. When you substitute these values back into the equation *β*<sub>*0*</sub> + *β*<sub>*1*</sub>*X*<sub>*1*</sub> + *β*<sub>*2*</sub>*X*<sub>*2*</sub> + *ϵ*, and replace *X*<sub>*1*</sub> and *X*<sub>*2*</sub> with observed values across all instances, you will get the error for each instance. These errors can be used to evaluate the model using the following methods:
+
+## Mean Absolute Error (MAE)
+
+<img width="277" alt="Screen Shot 2024-06-05 at 12 58 07 PM" src="https://github.com/KayChansiri/Demo_Performance_Metrics/assets/157029107/31d361b6-29d0-4141-9c43-32a287916e41">
+
+ 
+* This is calculated by summing the absolute values of errors across all samples.
+* Some people prefer using Mean Squared Error (MSE) over MAE because MSE penalizes larger errors more severely and avoids issues with calculus that may arise with MAE.
+
+## Mean Squared Error (MSE)
+
+<img width="306" alt="Screen Shot 2024-06-05 at 12 58 56 PM" src="https://github.com/KayChansiri/Demo_Performance_Metrics/assets/157029107/90ffb083-7ecf-4186-b972-3f1cfda921c5">
+
+
+## Root Mean Squared Error (RMSE)**
+  
+<img width="357" alt="Screen Shot 2024-06-05 at 12 59 00 PM" src="https://github.com/KayChansiri/Demo_Performance_Metrics/assets/157029107/d68d0bf8-4172-455e-ad42-af6e23269b3f">
+
+# K-Fold Cross-Validation
+
+Now that you learned all of important evaluatiom metrics for machine learning, it is noteworthy that it would never be sufficient to evaluate a model just once and then assume it performs well or poorly. 
+> A standard practice in machine learning is to use multiple samples, ideally independent from each other, and average the evaluation metrics to assess overall model performance. 
+
+* The process is known as **K-fold cross-validation**, where data is separated into *n*  sets. *n-1* sets are used as the training set and the remaining set as the testing set. Some may suggest having an additional validation set to fine-tune the model before final testing and deployment. You can read more about cross-validation techniques in [my previous post](https://github.com/KayChansiri/demo_random_forest-), which mainly discusses ensemble techniques but also covers cross-validation in detail.
+
+* In addition to obtaining average metrics for regressors (i.e., models predicting continuous outcomes) or majority votes for classifiers (i.e., models predicting categorical outcomes), we may also use statistical tests to determine if one model performs better than another. A common method is the paired t-test to see if the averages across models are statistically different. This is suitable because K-fold cross-validation samples are dependent on each other, being resampled from the same population.
+
+* However, some researchers argue that the paired sample t-test may not be ideal due to its sensitivity to outliers. Alternatives such as Wilcoxon’s signed-rank test or DeLong's test are recommended depending on the metric being compared. I encourage you to read the article by Rainio, Teuho, and Keen, which explains which statistical methods to use for comparing evaluation metrics across models. Their Figure 3 is particularly informative. You can find the article here: [Nature Article](https://www.nature.com/articles/s41598-024-56706-x).
+*In summary, I would say that the choice of statistical test depends on your data (e.g., evaluation metric values for parametric or non-parametric metrics), the number of models you want to compare (two or more), and whether you are comparing means or variances of the evaluation outcomes.
+
+
+There you have it! I hope this post helps you learn the basics of evaluation metrics for machine learning. Let me know in the comments below if you have any questions!
+
+
+
+
 
 
 
